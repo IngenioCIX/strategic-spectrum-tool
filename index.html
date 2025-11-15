@@ -1,0 +1,444 @@
+import React, { useState } from 'react';
+import { ArrowRight, Download, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
+
+const StrategicSpectrumTool = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState(false);
+
+  const questions = [
+    {
+      id: 'goals',
+      title: "Client's Goals and Risk Appetite",
+      question: "What best describes your client's current objectives and tolerance for risk?",
+      options: [
+        { value: -2, label: "Seeking bold innovation, high risk tolerance", type: "deviation" },
+        { value: -1, label: "Open to moderate innovation with calculated risks", type: "deviation" },
+        { value: 0, label: "Balanced approach between stability and innovation", type: "neutral" },
+        { value: 1, label: "Prefer reliable improvements with minimal risk", type: "deepening" },
+        { value: 2, label: "Prioritize stability and incremental growth", type: "deepening" }
+      ]
+    },
+    {
+      id: 'audience',
+      title: "Target Audience Preferences",
+      question: "How does your target audience respond to change and innovation?",
+      options: [
+        { value: -2, label: "Craving novelty, trend-focused, younger demographics", type: "deviation" },
+        { value: -1, label: "Open to fresh approaches with some familiarity", type: "deviation" },
+        { value: 0, label: "Mixed preferences, diverse audience segments", type: "neutral" },
+        { value: 1, label: "Value trust and consistency over novelty", type: "deepening" },
+        { value: 2, label: "Conservative, prefer familiar and traditional approaches", type: "deepening" }
+      ]
+    },
+    {
+      id: 'brand',
+      title: "Brand Values and Identity",
+      question: "How does the brand position itself in the market?",
+      options: [
+        { value: -2, label: "Disruptor or challenger brand pushing boundaries", type: "deviation" },
+        { value: -1, label: "Innovative brand with flexible values", type: "deviation" },
+        { value: 0, label: "Balanced brand identity with room for evolution", type: "neutral" },
+        { value: 1, label: "Established brand with strong heritage", type: "deepening" },
+        { value: 2, label: "Legacy brand emphasizing tradition, trust, luxury", type: "deepening" }
+      ]
+    },
+    {
+      id: 'market',
+      title: "Market and Competitive Landscape",
+      question: "What characterizes your competitive environment?",
+      options: [
+        { value: -2, label: "Oversaturated market, need to stand out dramatically", type: "deviation" },
+        { value: -1, label: "Fast-evolving market with innovative competitors", type: "deviation" },
+        { value: 0, label: "Moderately competitive with mixed approaches", type: "neutral" },
+        { value: 1, label: "Stable market with established norms", type: "deepening" },
+        { value: 2, label: "Conservative market rewarding consistency (finance, healthcare)", type: "deepening" }
+      ]
+    },
+    {
+      id: 'loyalty',
+      title: "Customer Loyalty and Brand Equity",
+      question: "What's the current state of customer relationships?",
+      options: [
+        { value: -2, label: "Low loyalty, need to attract new customers", type: "deviation" },
+        { value: -1, label: "Building loyalty, seeking new market segments", type: "deviation" },
+        { value: 0, label: "Moderate loyalty with growth opportunities", type: "neutral" },
+        { value: 1, label: "Strong loyalty, established customer base", type: "deepening" },
+        { value: 2, label: "High loyalty, significant brand equity to protect", type: "deepening" }
+      ]
+    },
+    {
+      id: 'budget',
+      title: "Budget and Resource Constraints",
+      question: "What resources are available for strategic initiatives?",
+      options: [
+        { value: -2, label: "Large budget, significant resources for experimentation", type: "deviation" },
+        { value: -1, label: "Adequate budget with flexibility for innovation", type: "deviation" },
+        { value: 0, label: "Moderate budget requiring strategic allocation", type: "neutral" },
+        { value: 1, label: "Limited budget, need cost-effective approaches", type: "deepening" },
+        { value: 2, label: "Constrained resources, must optimize existing efforts", type: "deepening" }
+      ]
+    },
+    {
+      id: 'culture',
+      title: "Cultural and Social Context",
+      question: "What's happening in the broader cultural landscape?",
+      options: [
+        { value: -2, label: "Major cultural shifts, social movements gaining momentum", type: "deviation" },
+        { value: -1, label: "Progressive change, opportunity for new narratives", type: "deviation" },
+        { value: 0, label: "Stable cultural context with some evolution", type: "neutral" },
+        { value: 1, label: "Traditional values remain strong", type: "deepening" },
+        { value: 2, label: "Uncertain times, audiences seeking comfort and continuity", type: "deepening" }
+      ]
+    },
+    {
+      id: 'time',
+      title: "Time Constraints",
+      question: "What's the timeline for results?",
+      options: [
+        { value: -2, label: "Long-term view, time for experimentation", type: "deviation" },
+        { value: -1, label: "Flexible timeline with room for testing", type: "deviation" },
+        { value: 0, label: "Balanced timeline, strategic milestones", type: "neutral" },
+        { value: 1, label: "Need reliable results within 6-12 months", type: "deepening" },
+        { value: 2, label: "Immediate results required, quick wins essential", type: "deepening" }
+      ]
+    }
+  ];
+
+  const handleAnswer = (value) => {
+    setAnswers({ ...answers, [questions[currentStep].id]: value });
+    
+    if (currentStep < questions.length - 1) {
+      setTimeout(() => setCurrentStep(currentStep + 1), 300);
+    } else {
+      setTimeout(() => setShowResults(true), 300);
+    }
+  };
+
+  const calculateResults = () => {
+    const total = Object.values(answers).reduce((sum, val) => sum + val, 0);
+    const maxScore = questions.length * 2;
+    const percentage = ((total + maxScore) / (maxScore * 2)) * 100;
+    
+    let position, direction;
+    if (percentage < 35) {
+      position = "Strong Strategic Deviation";
+      direction = "deviation";
+    } else if (percentage < 45) {
+      position = "Moderate Strategic Deviation";
+      direction = "deviation";
+    } else if (percentage < 55) {
+      position = "Balanced Approach";
+      direction = "neutral";
+    } else if (percentage < 65) {
+      position = "Moderate Strategic Deepening";
+      direction = "deepening";
+    } else {
+      position = "Strong Strategic Deepening";
+      direction = "deepening";
+    }
+
+    return { total, percentage, position, direction };
+  };
+
+  const getRecommendations = (direction, percentage) => {
+    if (direction === "deviation" || percentage < 45) {
+      return [
+        {
+          title: "Embrace Bold Innovation",
+          description: "Your context supports taking calculated risks. Consider campaigns that break from category norms and challenge audience expectations."
+        },
+        {
+          title: "Explore New Channels and Formats",
+          description: "Experiment with emerging platforms and unconventional storytelling approaches to differentiate from competitors."
+        },
+        {
+          title: "Create Disruptive Narratives",
+          description: "Develop brand messaging that challenges the status quo and aligns with cultural shifts or progressive values."
+        },
+        {
+          title: "Invest in Experimentation",
+          description: "Allocate resources to test new concepts, prototypes, or market segments even if outcomes are uncertain."
+        }
+      ];
+    } else if (direction === "deepening" || percentage > 55) {
+      return [
+        {
+          title: "Optimize Existing Touchpoints",
+          description: "Refine and enhance current customer experiences before exploring entirely new channels or approaches."
+        },
+        {
+          title: "Strengthen Core Brand Values",
+          description: "Double down on messaging that reinforces what your loyal customers already appreciate about the brand."
+        },
+        {
+          title: "Implement Incremental Improvements",
+          description: "Focus on A/B testing and data-driven refinements rather than complete overhauls of strategy."
+        },
+        {
+          title: "Build on Proven Success",
+          description: "Identify what's working well and scale those efforts rather than pivoting to untested approaches."
+        }
+      ];
+    } else {
+      return [
+        {
+          title: "Balance Innovation with Consistency",
+          description: "Introduce fresh elements while maintaining core brand identity and customer expectations."
+        },
+        {
+          title: "Test and Learn Approach",
+          description: "Implement small-scale experiments alongside your proven strategies to gather insights without major risk."
+        },
+        {
+          title: "Selective Disruption",
+          description: "Identify specific touchpoints or campaigns where innovation would have the most impact while keeping other areas stable."
+        },
+        {
+          title: "Phased Evolution",
+          description: "Plan a gradual transformation that allows for course correction based on customer response and market feedback."
+        }
+      ];
+    }
+  };
+
+  const getDrivers = () => {
+    const drivers = [];
+    Object.entries(answers).forEach(([key, value]) => {
+      const question = questions.find(q => q.id === key);
+      if (value <= -1) {
+        drivers.push({ factor: question.title, direction: "Strategic Deviation", strength: Math.abs(value) });
+      } else if (value >= 1) {
+        drivers.push({ factor: question.title, direction: "Strategic Deepening", strength: value });
+      }
+    });
+    return drivers.sort((a, b) => b.strength - a.strength);
+  };
+
+  const resetAssessment = () => {
+    setCurrentStep(0);
+    setAnswers({});
+    setShowResults(false);
+  };
+
+  if (showResults) {
+    const results = calculateResults();
+    const recommendations = getRecommendations(results.direction, results.percentage);
+    const drivers = getDrivers();
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Your Strategic Position</h1>
+            <p className="text-purple-200 text-lg">Based on your assessment of 8 key strategic gauges</p>
+          </div>
+
+          {/* Main Results Card */}
+          <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
+                <span className="text-5xl font-bold text-white">{Math.round(results.percentage)}%</span>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">{results.position}</h2>
+              <p className="text-gray-600">
+                {results.direction === "deviation" && "Your context supports bold innovation and breaking from established norms."}
+                {results.direction === "deepening" && "Your context favors refining and optimizing existing strategies."}
+                {results.direction === "neutral" && "Your context supports a balanced approach between innovation and optimization."}
+              </p>
+            </div>
+
+            {/* Spectrum Visualization */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-purple-600 flex items-center gap-2">
+                  <TrendingUp size={16} />
+                  Strategic Deviation
+                </span>
+                <span className="text-sm font-semibold text-pink-600 flex items-center gap-2">
+                  Strategic Deepening
+                  <TrendingDown size={16} />
+                </span>
+              </div>
+              <div className="relative h-4 bg-gradient-to-r from-purple-500 via-purple-300 to-pink-500 rounded-full">
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-4 border-gray-900 rounded-full shadow-lg transition-all"
+                  style={{ left: `calc(${results.percentage}% - 12px)` }}
+                />
+              </div>
+            </div>
+
+            {/* Key Drivers */}
+            {drivers.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Key Drivers</h3>
+                <div className="space-y-3">
+                  {drivers.slice(0, 4).map((driver, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className={`w-2 h-2 mt-2 rounded-full ${driver.direction === "Strategic Deviation" ? "bg-purple-500" : "bg-pink-500"}`} />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-900">{driver.factor}</span>
+                          <span className={`text-sm font-medium ${driver.direction === "Strategic Deviation" ? "text-purple-600" : "text-pink-600"}`}>
+                            {driver.direction}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Recommendations */}
+          <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Strategic Recommendations</h3>
+            <div className="space-y-6">
+              {recommendations.map((rec, index) => (
+                <div key={index} className="border-l-4 border-purple-500 pl-4">
+                  <h4 className="font-bold text-gray-900 mb-2">{rec.title}</h4>
+                  <p className="text-gray-600">{rec.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={resetAssessment}
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
+            >
+              <RotateCcw size={20} />
+              Start New Assessment
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center mt-12 text-purple-200">
+            <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
+            <p className="text-sm">Based on frameworks designed for D&AD's Shift program</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const progress = ((currentStep + 1) / questions.length) * 100;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+      <div className="max-w-3xl mx-auto">
+        {currentStep === 0 ? (
+          // Landing Page
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Strategic Spectrum Assessment
+            </h1>
+            <p className="text-xl md:text-2xl text-purple-200 mb-8 max-w-2xl mx-auto">
+              Navigate uncertainty with clarity. Discover whether your context calls for bold innovation or strategic refinement.
+            </p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/20">
+              <h2 className="text-2xl font-bold text-white mb-4">What You'll Discover</h2>
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Your Strategic Position</h3>
+                  <p className="text-purple-100 text-sm">Where you fall on the deviation ↔ deepening spectrum</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Key Drivers</h3>
+                  <p className="text-purple-100 text-sm">Which factors are pushing you in each direction</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Tailored Recommendations</h3>
+                  <p className="text-purple-100 text-sm">4 strategic actions aligned with your context</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Decision Framework</h3>
+                  <p className="text-purple-100 text-sm">A clear lens for navigating in-between periods</p>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setCurrentStep(1)}
+              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-2xl hover:scale-105"
+            >
+              Begin Assessment
+              <ArrowRight size={24} />
+            </button>
+            <p className="text-purple-300 mt-6 text-sm">Takes 3-5 minutes · 8 questions</p>
+            
+            <div className="mt-16 text-purple-200 text-sm">
+              <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
+              <p>Based on frameworks designed for D&AD's Shift program</p>
+            </div>
+          </div>
+        ) : (
+          // Question Flow
+          <div>
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-purple-200 text-sm font-semibold">
+                  Question {currentStep} of {questions.length}
+                </span>
+                <span className="text-purple-200 text-sm font-semibold">
+                  {Math.round(progress)}% Complete
+                </span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Question Card */}
+            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6 animate-fadeIn">
+              <div className="mb-6">
+                <span className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-4">
+                  {questions[currentStep - 1].title}
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {questions[currentStep - 1].question}
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                {questions[currentStep - 1].options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswer(option.value)}
+                    className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-900 font-medium group-hover:text-purple-700">
+                        {option.label}
+                      </span>
+                      <ArrowRight size={20} className="text-gray-400 group-hover:text-purple-500 opacity-0 group-hover:opacity-100 transition-all" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Back Button */}
+            {currentStep > 1 && (
+              <button
+                onClick={() => setCurrentStep(currentStep - 1)}
+                className="text-purple-200 hover:text-white transition-colors"
+              >
+                ← Back
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default StrategicSpectrumTool;
