@@ -6,7 +6,7 @@ Interactive assessment tool for strategic positioning - helps agencies and brand
 
 ## Overview
 
-This tool operationalizes strategic frameworks developed for D&AD's Shift program, helping agencies navigate the critical question: **Should we innovate boldly or refine what's working?**
+This tool operationalizes a strategic framework developed to help agencies navigate the critical question: **Should we innovate boldly or refine what's working?**
 
 During "in-between" economic periods (pre-recession, post-recession, or periods of uncertainty), fear-based decision-making often paralyzes both agencies and clients. This assessment provides a structured approach to strategic positioning through 8 key gauges.
 
