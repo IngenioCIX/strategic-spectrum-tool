@@ -1,789 +1,444 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Retail Transformation Diagnostic | Ingenio CIX</title>
-    <meta name="description" content="Six-pillar framework for assessing whether retail spaces function as urban infrastructure or traditional commerce">
+import React, { useState } from 'react';
+import { ArrowRight, Download, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
+
+const StrategicSpectrumTool = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState(false);
+
+  const questions = [
+    {
+      id: 'goals',
+      title: "Client's Goals and Risk Appetite",
+      question: "What best describes your client's current objectives and tolerance for risk?",
+      options: [
+        { value: -2, label: "Seeking bold innovation, high risk tolerance", type: "deviation" },
+        { value: -1, label: "Open to moderate innovation with calculated risks", type: "deviation" },
+        { value: 0, label: "Balanced approach between stability and innovation", type: "neutral" },
+        { value: 1, label: "Prefer reliable improvements with minimal risk", type: "deepening" },
+        { value: 2, label: "Prioritize stability and incremental growth", type: "deepening" }
+      ]
+    },
+    {
+      id: 'audience',
+      title: "Target Audience Preferences",
+      question: "How does your target audience respond to change and innovation?",
+      options: [
+        { value: -2, label: "Craving novelty, trend-focused, younger demographics", type: "deviation" },
+        { value: -1, label: "Open to fresh approaches with some familiarity", type: "deviation" },
+        { value: 0, label: "Mixed preferences, diverse audience segments", type: "neutral" },
+        { value: 1, label: "Value trust and consistency over novelty", type: "deepening" },
+        { value: 2, label: "Conservative, prefer familiar and traditional approaches", type: "deepening" }
+      ]
+    },
+    {
+      id: 'brand',
+      title: "Brand Values and Identity",
+      question: "How does the brand position itself in the market?",
+      options: [
+        { value: -2, label: "Disruptor or challenger brand pushing boundaries", type: "deviation" },
+        { value: -1, label: "Innovative brand with flexible values", type: "deviation" },
+        { value: 0, label: "Balanced brand identity with room for evolution", type: "neutral" },
+        { value: 1, label: "Established brand with strong heritage", type: "deepening" },
+        { value: 2, label: "Legacy brand emphasizing tradition, trust, luxury", type: "deepening" }
+      ]
+    },
+    {
+      id: 'market',
+      title: "Market and Competitive Landscape",
+      question: "What characterizes your competitive environment?",
+      options: [
+        { value: -2, label: "Oversaturated market, need to stand out dramatically", type: "deviation" },
+        { value: -1, label: "Fast-evolving market with innovative competitors", type: "deviation" },
+        { value: 0, label: "Moderately competitive with mixed approaches", type: "neutral" },
+        { value: 1, label: "Stable market with established norms", type: "deepening" },
+        { value: 2, label: "Conservative market rewarding consistency (finance, healthcare)", type: "deepening" }
+      ]
+    },
+    {
+      id: 'loyalty',
+      title: "Customer Loyalty and Brand Equity",
+      question: "What's the current state of customer relationships?",
+      options: [
+        { value: -2, label: "Low loyalty, need to attract new customers", type: "deviation" },
+        { value: -1, label: "Building loyalty, seeking new market segments", type: "deviation" },
+        { value: 0, label: "Moderate loyalty with growth opportunities", type: "neutral" },
+        { value: 1, label: "Strong loyalty, established customer base", type: "deepening" },
+        { value: 2, label: "High loyalty, significant brand equity to protect", type: "deepening" }
+      ]
+    },
+    {
+      id: 'budget',
+      title: "Budget and Resource Constraints",
+      question: "What resources are available for strategic initiatives?",
+      options: [
+        { value: -2, label: "Large budget, significant resources for experimentation", type: "deviation" },
+        { value: -1, label: "Adequate budget with flexibility for innovation", type: "deviation" },
+        { value: 0, label: "Moderate budget requiring strategic allocation", type: "neutral" },
+        { value: 1, label: "Limited budget, need cost-effective approaches", type: "deepening" },
+        { value: 2, label: "Constrained resources, must optimize existing efforts", type: "deepening" }
+      ]
+    },
+    {
+      id: 'culture',
+      title: "Cultural and Social Context",
+      question: "What's happening in the broader cultural landscape?",
+      options: [
+        { value: -2, label: "Major cultural shifts, social movements gaining momentum", type: "deviation" },
+        { value: -1, label: "Progressive change, opportunity for new narratives", type: "deviation" },
+        { value: 0, label: "Stable cultural context with some evolution", type: "neutral" },
+        { value: 1, label: "Traditional values remain strong", type: "deepening" },
+        { value: 2, label: "Uncertain times, audiences seeking comfort and continuity", type: "deepening" }
+      ]
+    },
+    {
+      id: 'time',
+      title: "Time Constraints",
+      question: "What's the timeline for results?",
+      options: [
+        { value: -2, label: "Long-term view, time for experimentation", type: "deviation" },
+        { value: -1, label: "Flexible timeline with room for testing", type: "deviation" },
+        { value: 0, label: "Balanced timeline, strategic milestones", type: "neutral" },
+        { value: 1, label: "Need reliable results within 6-12 months", type: "deepening" },
+        { value: 2, label: "Immediate results required, quick wins essential", type: "deepening" }
+      ]
+    }
+  ];
+
+  const handleAnswer = (value) => {
+    setAnswers({ ...answers, [questions[currentStep].id]: value });
     
-    <!-- React and ReactDOM from CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    if (currentStep < questions.length - 1) {
+      setTimeout(() => setCurrentStep(currentStep + 1), 300);
+    } else {
+      setTimeout(() => setShowResults(true), 300);
+    }
+  };
+
+  const calculateResults = () => {
+    const total = Object.values(answers).reduce((sum, val) => sum + val, 0);
+    const maxScore = questions.length * 2;
+    const percentage = ((total + maxScore) / (maxScore * 2)) * 100;
     
-    <!-- Babel Standalone for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+    let position, direction;
+    if (percentage < 35) {
+      position = "Strong Strategic Deviation";
+      direction = "deviation";
+    } else if (percentage < 45) {
+      position = "Moderate Strategic Deviation";
+      direction = "deviation";
+    } else if (percentage < 55) {
+      position = "Balanced Approach";
+      direction = "neutral";
+    } else if (percentage < 65) {
+      position = "Moderate Strategic Deepening";
+      direction = "deepening";
+    } else {
+      position = "Strong Strategic Deepening";
+      direction = "deepening";
+    }
+
+    return { total, percentage, position, direction };
+  };
+
+  const getRecommendations = (direction, percentage) => {
+    if (direction === "deviation" || percentage < 45) {
+      return [
+        {
+          title: "Embrace Bold Innovation",
+          description: "Your context supports taking calculated risks. Consider campaigns that break from category norms and challenge audience expectations."
+        },
+        {
+          title: "Explore New Channels and Formats",
+          description: "Experiment with emerging platforms and unconventional storytelling approaches to differentiate from competitors."
+        },
+        {
+          title: "Create Disruptive Narratives",
+          description: "Develop brand messaging that challenges the status quo and aligns with cultural shifts or progressive values."
+        },
+        {
+          title: "Invest in Experimentation",
+          description: "Allocate resources to test new concepts, prototypes, or market segments even if outcomes are uncertain."
         }
-        .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out;
+      ];
+    } else if (direction === "deepening" || percentage > 55) {
+      return [
+        {
+          title: "Optimize Existing Touchpoints",
+          description: "Refine and enhance current customer experiences before exploring entirely new channels or approaches."
+        },
+        {
+          title: "Strengthen Core Brand Values",
+          description: "Double down on messaging that reinforces what your loyal customers already appreciate about the brand."
+        },
+        {
+          title: "Implement Incremental Improvements",
+          description: "Focus on A/B testing and data-driven refinements rather than complete overhauls of strategy."
+        },
+        {
+          title: "Build on Proven Success",
+          description: "Identify what's working well and scale those efforts rather than pivoting to untested approaches."
         }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
+      ];
+    } else {
+      return [
+        {
+          title: "Balance Innovation with Consistency",
+          description: "Introduce fresh elements while maintaining core brand identity and customer expectations."
+        },
+        {
+          title: "Test and Learn Approach",
+          description: "Implement small-scale experiments alongside your proven strategies to gather insights without major risk."
+        },
+        {
+          title: "Selective Disruption",
+          description: "Identify specific touchpoints or campaigns where innovation would have the most impact while keeping other areas stable."
+        },
+        {
+          title: "Phased Evolution",
+          description: "Plan a gradual transformation that allows for course correction based on customer response and market feedback."
+        }
+      ];
+    }
+  };
 
-    <script type="text/babel">
-        const { useState } = React;
+  const getDrivers = () => {
+    const drivers = [];
+    Object.entries(answers).forEach(([key, value]) => {
+      const question = questions.find(q => q.id === key);
+      if (value <= -1) {
+        drivers.push({ factor: question.title, direction: "Strategic Deviation", strength: Math.abs(value) });
+      } else if (value >= 1) {
+        drivers.push({ factor: question.title, direction: "Strategic Deepening", strength: value });
+      }
+    });
+    return drivers.sort((a, b) => b.strength - a.strength);
+  };
 
-        // Lucide React icons as inline SVG components
-        const ArrowRight = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        );
+  const resetAssessment = () => {
+    setCurrentStep(0);
+    setAnswers({});
+    setShowResults(false);
+  };
 
-        const RotateCcw = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <polyline points="1 4 1 10 7 10"></polyline>
-                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-            </svg>
-        );
+  if (showResults) {
+    const results = calculateResults();
+    const recommendations = getRecommendations(results.direction, results.percentage);
+    const drivers = getDrivers();
 
-        const Building2 = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
-                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-                <path d="M10 6h4"></path>
-                <path d="M10 10h4"></path>
-                <path d="M10 14h4"></path>
-                <path d="M10 18h4"></path>
-            </svg>
-        );
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Your Strategic Position</h1>
+            <p className="text-purple-200 text-lg">Based on your assessment of 8 key strategic gauges</p>
+          </div>
 
-        const Users = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-        );
+          {/* Main Results Card */}
+          <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
+                <span className="text-5xl font-bold text-white">{Math.round(results.percentage)}%</span>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">{results.position}</h2>
+              <p className="text-gray-600">
+                {results.direction === "deviation" && "Your context supports bold innovation and breaking from established norms."}
+                {results.direction === "deepening" && "Your context favors refining and optimizing existing strategies."}
+                {results.direction === "neutral" && "Your context supports a balanced approach between innovation and optimization."}
+              </p>
+            </div>
 
-        const Layers = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-        );
+            {/* Spectrum Visualization */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-purple-600 flex items-center gap-2">
+                  <TrendingUp size={16} />
+                  Strategic Deviation
+                </span>
+                <span className="text-sm font-semibold text-pink-600 flex items-center gap-2">
+                  Strategic Deepening
+                  <TrendingDown size={16} />
+                </span>
+              </div>
+              <div className="relative h-4 bg-gradient-to-r from-purple-500 via-purple-300 to-pink-500 rounded-full">
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-4 border-gray-900 rounded-full shadow-lg transition-all"
+                  style={{ left: `calc(${results.percentage}% - 12px)` }}
+                />
+              </div>
+            </div>
 
-        const Landmark = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <line x1="3" y1="22" x2="21" y2="22"></line>
-                <line x1="6" y1="18" x2="6" y2="11"></line>
-                <line x1="10" y1="18" x2="10" y2="11"></line>
-                <line x1="14" y1="18" x2="14" y2="11"></line>
-                <line x1="18" y1="18" x2="18" y2="11"></line>
-                <polygon points="12 2 20 7 4 7"></polygon>
-            </svg>
-        );
-
-        const TrendingUp = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                <polyline points="17 6 23 6 23 12"></polyline>
-            </svg>
-        );
-
-        const Globe = ({ size = 24, className = "" }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-        );
-
-        const UrbanRetailDiagnostic = () => {
-            const [currentPillar, setCurrentPillar] = useState(0);
-            const [currentQuestion, setCurrentQuestion] = useState(0);
-            const [answers, setAnswers] = useState({});
-            const [showResults, setShowResults] = useState(false);
-
-            const pillars = [
-                {
-                    id: 'coordination',
-                    name: 'Urban Coordination Engine',
-                    icon: Building2,
-                    description: 'Acts as physical interface for digital life, organizing logistics, mobility, and services',
-                    questions: [
-                        {
-                            id: 'coordination_1',
-                            question: 'Does your store integrate last-mile delivery or micro-logistics services?',
-                            options: [
-                                { value: 2, label: 'Yes, fully integrated delivery hub with multiple carriers' },
-                                { value: 1, label: 'Some delivery services available' },
-                                { value: 0, label: 'Traditional fulfillment only' },
-                                { value: -1, label: 'No integration with logistics infrastructure' },
-                                { value: -2, label: 'Actively resistant to delivery integration' }
-                            ]
-                        },
-                        {
-                            id: 'coordination_2',
-                            question: 'How connected is your location to public transit and micromobility networks?',
-                            options: [
-                                { value: 2, label: 'Direct transit connection + bike share/scooter integration' },
-                                { value: 1, label: 'Near transit with some pedestrian infrastructure' },
-                                { value: 0, label: 'Accessible but car-dependent' },
-                                { value: -1, label: 'Primarily auto-oriented location' },
-                                { value: -2, label: 'Disconnected from urban mobility networks' }
-                            ]
-                        },
-                        {
-                            id: 'coordination_3',
-                            question: 'Does your store help customers navigate discovery and choice overload?',
-                            options: [
-                                { value: 2, label: 'Expert curation, guided discovery, reduces search costs' },
-                                { value: 1, label: 'Some curation and assistance available' },
-                                { value: 0, label: 'Standard retail organization' },
-                                { value: -1, label: 'Overwhelming product arrays without guidance' },
-                                { value: -2, label: 'Maximizes SKUs without navigation support' }
-                            ]
-                        },
-                        {
-                            id: 'coordination_4',
-                            question: 'Do you solve neighborhood coordination problems (meeting points, package pickup, services)?',
-                            options: [
-                                { value: 2, label: 'Multiple coordination services for community' },
-                                { value: 1, label: 'Some community coordination functions' },
-                                { value: 0, label: 'Focused on transactions only' },
-                                { value: -1, label: 'No community coordination role' },
-                                { value: -2, label: 'Actively discourages non-shopping use' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'platform',
-                    name: 'Economic & Social Participation Platform',
-                    icon: Users,
-                    description: 'Enables upward mobility through business incubation, workforce development, and access',
-                    questions: [
-                        {
-                            id: 'platform_1',
-                            question: 'Do you provide workforce development or skills training for community members?',
-                            options: [
-                                { value: 2, label: 'Regular programs: digital literacy, career skills, business training' },
-                                { value: 1, label: 'Occasional workshops or training sessions' },
-                                { value: 0, label: 'No community education programs' },
-                                { value: -1, label: 'Employee training only, not community-facing' },
-                                { value: -2, label: 'No investment in human capital development' }
-                            ]
-                        },
-                        {
-                            id: 'platform_2',
-                            question: 'Do you incubate small businesses, local artisans, or emerging brands?',
-                            options: [
-                                { value: 2, label: 'Active incubation: rotating vendors, pop-ups, mentorship' },
-                                { value: 1, label: 'Some local vendor opportunities' },
-                                { value: 0, label: 'Established brands only' },
-                                { value: -1, label: 'Prefer national chains exclusively' },
-                                { value: -2, label: 'No pathway for local economic participation' }
-                            ]
-                        },
-                        {
-                            id: 'platform_3',
-                            question: 'Are financial services or credit accessible to median-income customers?',
-                            options: [
-                                { value: 2, label: 'Accessible credit, financial literacy, payment flexibility' },
-                                { value: 1, label: 'Some accessible payment options' },
-                                { value: 0, label: 'Standard credit offerings' },
-                                { value: -1, label: 'Premium-only financing' },
-                                { value: -2, label: 'Excludes lower-middle income participation' }
-                            ]
-                        },
-                        {
-                            id: 'platform_4',
-                            question: 'Does your pricing strategy support middle-class affordability and aspiration?',
-                            options: [
-                                { value: 2, label: 'Accessible pricing with aspirational quality' },
-                                { value: 1, label: 'Mixed pricing with some affordable options' },
-                                { value: 0, label: 'Mid-market positioning' },
-                                { value: -1, label: 'Skewing premium/luxury' },
-                                { value: -2, label: 'Exclusively targeting affluent customers' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'hybrid',
-                    name: 'Hybrid Digital-Physical Infrastructure',
-                    icon: Layers,
-                    description: 'Integrates digital and physical realms as navigable interface for digital abundance',
-                    questions: [
-                        {
-                            id: 'hybrid_1',
-                            question: 'Does digital data inform your physical layout, inventory, and offerings?',
-                            options: [
-                                { value: 2, label: 'Fully integrated: real-time data shapes physical experience' },
-                                { value: 1, label: 'Some data integration in merchandising' },
-                                { value: 0, label: 'Separate digital and physical operations' },
-                                { value: -1, label: 'Minimal digital influence on physical space' },
-                                { value: -2, label: 'Completely siloed operations' }
-                            ]
-                        },
-                        {
-                            id: 'hybrid_2',
-                            question: 'Can customers access digital inventory, endless aisle, or online catalog in-store?',
-                            options: [
-                                { value: 2, label: 'Seamless digital-physical inventory access' },
-                                { value: 1, label: 'Some online ordering available in-store' },
-                                { value: 0, label: 'Physical inventory only' },
-                                { value: -1, label: 'Digital and physical treated as competitors' },
-                                { value: -2, label: 'No integration between channels' }
-                            ]
-                        },
-                        {
-                            id: 'hybrid_3',
-                            question: 'Do you offer membership programs that integrate digital and physical benefits?',
-                            options: [
-                                { value: 2, label: 'Unified membership with seamless benefits across channels' },
-                                { value: 1, label: 'Basic loyalty program with some integration' },
-                                { value: 0, label: 'Separate online and in-store programs' },
-                                { value: -1, label: 'Transaction-only relationship' },
-                                { value: -2, label: 'No membership or loyalty infrastructure' }
-                            ]
-                        },
-                        {
-                            id: 'hybrid_4',
-                            question: 'Does your physical space function as a micro-logistics hub for e-commerce?',
-                            options: [
-                                { value: 2, label: 'Active hub: pickup, returns, ship-from-store, dark store capacity' },
-                                { value: 1, label: 'Basic pickup and returns available' },
-                                { value: 0, label: 'Traditional store operations only' },
-                                { value: -1, label: 'Minimal accommodation for digital orders' },
-                                { value: -2, label: 'Physical space entirely separate from digital operations' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'civic',
-                    name: 'Cultural & Civic Institution',
-                    icon: Landmark,
-                    description: 'Functions as public space hosting cultural programming and community engagement',
-                    questions: [
-                        {
-                            id: 'civic_1',
-                            question: 'Do you host cultural programming (exhibitions, lectures, performances, workshops)?',
-                            options: [
-                                { value: 2, label: 'Regular cultural programming with community partnerships' },
-                                { value: 1, label: 'Occasional events or exhibitions' },
-                                { value: 0, label: 'Retail-only events (product launches)' },
-                                { value: -1, label: 'No cultural programming' },
-                                { value: -2, label: 'Actively discourage non-commercial activities' }
-                            ]
-                        },
-                        {
-                            id: 'civic_2',
-                            question: 'Does your space function as a third place for social gathering (beyond shopping)?',
-                            options: [
-                                { value: 2, label: 'Intentional gathering spaces, seating, community use encouraged' },
-                                { value: 1, label: 'Some informal gathering permitted' },
-                                { value: 0, label: 'Shopping-focused environment' },
-                                { value: -1, label: 'Minimal accommodation for lingering' },
-                                { value: -2, label: 'Actively discourages non-shopping presence' }
-                            ]
-                        },
-                        {
-                            id: 'civic_3',
-                            question: 'Do you provide civic or public services (community boards, information, resources)?',
-                            options: [
-                                { value: 2, label: 'Active civic partner: info services, community resources' },
-                                { value: 1, label: 'Some community information available' },
-                                { value: 0, label: 'Retail information only' },
-                                { value: -1, label: 'No civic role' },
-                                { value: -2, label: 'Purely commercial orientation' }
-                            ]
-                        },
-                        {
-                            id: 'civic_4',
-                            question: 'Does your store strengthen neighborhood identity and social cohesion?',
-                            options: [
-                                { value: 2, label: 'Central to neighborhood identity, hosts community gatherings' },
-                                { value: 1, label: 'Recognized neighborhood presence' },
-                                { value: 0, label: 'Generic retail location' },
-                                { value: -1, label: 'Disconnected from neighborhood' },
-                                { value: -2, label: 'Could be anywhere, no local connection' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'middleclass',
-                    name: 'Middle-Class Resurgence',
-                    icon: TrendingUp,
-                    description: 'Reflects and generates thriving middle class through access, cultural capital, and connectivity',
-                    questions: [
-                        {
-                            id: 'middleclass_1',
-                            question: 'Does your store provide reliable, affordable, and aspirational consumption for median incomes?',
-                            options: [
-                                { value: 2, label: 'Core mission: accessible aspiration for middle class' },
-                                { value: 1, label: 'Some middle-market accessibility' },
-                                { value: 0, label: 'Mixed positioning' },
-                                { value: -1, label: 'Primarily serving upper-income segments' },
-                                { value: -2, label: 'Explicitly luxury/premium positioning' }
-                            ]
-                        },
-                        {
-                            id: 'middleclass_2',
-                            question: 'Do you build cultural capital (taste development, education, social knowledge)?',
-                            options: [
-                                { value: 2, label: 'Active cultural education and taste development programs' },
-                                { value: 1, label: 'Some educational content available' },
-                                { value: 0, label: 'Product-focused only' },
-                                { value: -1, label: 'Assumes existing cultural capital' },
-                                { value: -2, label: 'Exclusionary cultural positioning' }
-                            ]
-                        },
-                        {
-                            id: 'middleclass_3',
-                            question: 'Does your store strengthen neighborhood connectivity and social infrastructure?',
-                            options: [
-                                { value: 2, label: 'Active network builder: introduces neighbors, facilitates connections' },
-                                { value: 1, label: 'Some community connection facilitation' },
-                                { value: 0, label: 'Individual transactions only' },
-                                { value: -1, label: 'Anonymous shopping experience' },
-                                { value: -2, label: 'Actively discourages social interaction' }
-                            ]
-                        },
-                        {
-                            id: 'middleclass_4',
-                            question: 'Are you a generator of middle-class life (jobs, opportunities, social mobility)?',
-                            options: [
-                                { value: 2, label: 'Active generator: quality jobs, career paths, opportunity creation' },
-                                { value: 1, label: 'Some quality employment opportunities' },
-                                { value: 0, label: 'Standard retail employment' },
-                                { value: -1, label: 'Minimal investment in workforce' },
-                                { value: -2, label: 'Low-wage, precarious employment model' }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: 'global',
-                    name: 'Global Discovery & Cultural Translation',
-                    icon: Globe,
-                    description: 'Functions as portal to global creativity, bringing emerging markets and cultural wonder to local communities',
-                    questions: [
-                        {
-                            id: 'global_1',
-                            question: 'Do you source from emerging fashion/design markets beyond established fashion capitals?',
-                            options: [
-                                { value: 2, label: 'Active partnerships with African, Latin American, Southeast Asian designers' },
-                                { value: 1, label: 'Some emerging market sourcing' },
-                                { value: 0, label: 'Primarily established markets (Europe, US, Japan)' },
-                                { value: -1, label: 'Focus on mass brands only' },
-                                { value: -2, label: 'No emerging market partnerships' }
-                            ]
-                        },
-                        {
-                            id: 'global_2',
-                            question: 'Do you create narrative discovery experiences (floors, pop-ups, cultural showcases)?',
-                            options: [
-                                { value: 2, label: 'Curated cultural journeys with contextual storytelling' },
-                                { value: 1, label: 'Occasional themed displays' },
-                                { value: 0, label: 'Product-focused merchandising' },
-                                { value: -1, label: 'Generic department layouts' },
-                                { value: -2, label: 'No experiential design' }
-                            ]
-                        },
-                        {
-                            id: 'global_3',
-                            question: 'Does your curation introduce customers to cultures/aesthetics they wouldn\'t discover digitally?',
-                            options: [
-                                { value: 2, label: 'Active anti-algorithm curation emphasizing unexpected discovery' },
-                                { value: 1, label: 'Some surprise and discovery elements' },
-                                { value: 0, label: 'Algorithm-similar recommendations' },
-                                { value: -1, label: 'Follows digital trends only' },
-                                { value: -2, label: 'No curatorial point of view' }
-                            ]
-                        },
-                        {
-                            id: 'global_4',
-                            question: 'Do you function as a cultural translator/portal to global creativity?',
-                            options: [
-                                { value: 2, label: 'Partnerships with international cultural institutions, designer showcases' },
-                                { value: 1, label: 'Occasional international events' },
-                                { value: 0, label: 'Domestic focus only' },
-                                { value: -1, label: 'No cultural translation role' },
-                                { value: -2, label: 'Generic global sourcing without cultural context' }
-                            ]
-                        }
-                    ]
-                }
-            ];
-
-            const handleAnswer = (value) => {
-                const pillar = pillars[currentPillar];
-                const question = pillar.questions[currentQuestion];
-                
-                setAnswers({ ...answers, [question.id]: value });
-                
-                if (currentQuestion < pillar.questions.length - 1) {
-                    setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300);
-                } else if (currentPillar < pillars.length - 1) {
-                    setTimeout(() => {
-                        setCurrentPillar(currentPillar + 1);
-                        setCurrentQuestion(0);
-                    }, 300);
-                } else {
-                    setTimeout(() => setShowResults(true), 300);
-                }
-            };
-
-            const calculateResults = () => {
-                const pillarScores = pillars.map(pillar => {
-                    const pillarAnswers = pillar.questions.map(q => answers[q.id] || 0);
-                    const sum = pillarAnswers.reduce((a, b) => a + b, 0);
-                    const maxPossible = pillar.questions.length * 2;
-                    const minPossible = pillar.questions.length * -2;
-                    const normalized = ((sum - minPossible) / (maxPossible - minPossible)) * 100;
-                    return {
-                        name: pillar.name,
-                        score: Math.round(normalized),
-                        raw: sum
-                    };
-                });
-
-                const overallScore = Math.round(
-                    pillarScores.reduce((sum, p) => sum + p.score, 0) / pillarScores.length
-                );
-
-                return { pillarScores, overallScore };
-            };
-
-            const getRecommendations = (pillarScores) => {
-                const weakest = [...pillarScores].sort((a, b) => a.score - b.score).slice(0, 3);
-                
-                const recommendationMap = {
-                    'Urban Coordination Engine': [
-                        'Integrate last-mile delivery services and micro-logistics partnerships',
-                        'Enhance transit connectivity and pedestrian/micromobility access',
-                        'Develop wayfinding and curation systems to reduce search costs',
-                        'Create coordination services (package pickup, meeting points, neighborhood services)'
-                    ],
-                    'Economic & Social Participation Platform': [
-                        'Launch workforce development programs (digital literacy, career skills)',
-                        'Create small business incubation spaces and rotating vendor programs',
-                        'Offer accessible financial services and payment flexibility',
-                        'Adjust pricing strategy to support middle-class affordability'
-                    ],
-                    'Hybrid Digital-Physical Infrastructure': [
-                        'Implement data-driven merchandising and space optimization',
-                        'Enable seamless digital inventory access and endless aisle in-store',
-                        'Develop unified membership programs across channels',
-                        'Transform locations into micro-logistics hubs for omnichannel fulfillment'
-                    ],
-                    'Cultural & Civic Institution': [
-                        'Establish regular cultural programming (exhibitions, lectures, workshops)',
-                        'Design third-place environments that encourage social gathering',
-                        'Partner with civic organizations to provide community resources',
-                        'Build neighborhood identity through local programming and partnerships'
-                    ],
-                    'Middle-Class Resurgence': [
-                        'Center strategy on accessible aspiration for median incomes',
-                        'Develop cultural capital programs (taste education, social knowledge)',
-                        'Facilitate neighborhood connections and social infrastructure',
-                        'Create quality employment with career advancement pathways'
-                    ],
-                    'Global Discovery & Cultural Translation': [
-                        'Establish partnerships with emerging fashion/design markets (Africa, Latin America, Southeast Asia)',
-                        'Create narrative discovery experiences with cultural context and storytelling',
-                        'Implement anti-algorithm curation that surprises and delights',
-                        'Partner with international cultural institutions for authentic global showcases'
-                    ]
-                };
-
-                return weakest.map(pillar => ({
-                    pillar: pillar.name,
-                    score: pillar.score,
-                    recommendations: recommendationMap[pillar.name]
-                }));
-            };
-
-            const resetAssessment = () => {
-                setCurrentPillar(0);
-                setCurrentQuestion(0);
-                setAnswers({});
-                setShowResults(false);
-            };
-
-            if (showResults) {
-                const results = calculateResults();
-                const recommendations = getRecommendations(results.pillarScores);
-
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4 md:p-8">
-                        <div className="max-w-5xl mx-auto">
-                            <div className="text-center mb-8">
-                                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Your Urban Infrastructure Profile</h1>
-                                <p className="text-blue-200 text-lg">Assessment across 6 pillars of urban retail transformation</p>
-                            </div>
-
-                            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
-                                <div className="text-center mb-8">
-                                    <div className="inline-flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 mb-4">
-                                        <div className="text-center">
-                                            <div className="text-5xl font-bold text-white">{results.overallScore}%</div>
-                                            <div className="text-sm text-white/90">Urban Infrastructure</div>
-                                        </div>
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                                        {results.overallScore >= 70 ? 'Strong Urban Infrastructure' :
-                                         results.overallScore >= 50 ? 'Emerging Infrastructure Model' :
-                                         results.overallScore >= 30 ? 'Traditional Retail with Infrastructure Elements' :
-                                         'Traditional Retail Model'}
-                                    </h2>
-                                    <p className="text-gray-600 max-w-2xl mx-auto">
-                                        {results.overallScore >= 70 ? 'Your store functions primarily as urban infrastructure, solving coordination problems and serving civic functions beyond commerce.' :
-                                         results.overallScore >= 50 ? 'Your store shows promising infrastructure characteristics but retains significant traditional retail elements.' :
-                                         results.overallScore >= 30 ? 'Your store operates primarily as traditional retail with some emerging infrastructure capabilities.' :
-                                         'Your store operates as traditional retail with minimal urban infrastructure characteristics.'}
-                                    </p>
-                                </div>
-
-                                <div className="mb-8">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Pillar Breakdown</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {results.pillarScores.map((pillar, index) => {
-                                            const Icon = pillars[index].icon;
-                                            return (
-                                                <div key={index} className="text-center">
-                                                    <div className="mb-3 flex justify-center">
-                                                        <Icon size={28} className="text-blue-600" />
-                                                    </div>
-                                                    <div className="relative h-32 flex items-end justify-center mb-2">
-                                                        <div 
-                                                            className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t-lg transition-all"
-                                                            style={{ height: `${pillar.score}%` }}
-                                                        />
-                                                        <div className="absolute bottom-0 w-full text-center py-2">
-                                                            <div className="text-2xl font-bold text-white">{pillar.score}%</div>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-xs font-semibold text-gray-700">{pillar.name}</p>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="bg-blue-50 rounded-xl p-6">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-3">Infrastructure vs. Retail Orientation</h3>
-                                    <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
-                                        <div 
-                                            className="absolute h-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all"
-                                            style={{ width: `${results.overallScore}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex justify-between mt-2 text-sm">
-                                        <span className="text-gray-600">Traditional Retail (0%)</span>
-                                        <span className="font-semibold text-blue-600">Your Store ({results.overallScore}%)</span>
-                                        <span className="text-gray-600">Urban Infrastructure (100%)</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-6">Priority Recommendations</h3>
-                                <p className="text-gray-600 mb-6">Focus on strengthening these pillars to advance your urban infrastructure transformation:</p>
-                                
-                                {recommendations.map((rec, index) => (
-                                    <div key={index} className="mb-8 last:mb-0">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <h4 className="text-xl font-bold text-gray-900">{rec.pillar}</h4>
-                                            <span className="px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                                                {rec.score}% Current
-                                            </span>
-                                        </div>
-                                        <ul className="space-y-2">
-                                            {rec.recommendations.map((r, i) => (
-                                                <li key={i} className="flex items-start gap-3">
-                                                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 flex-shrink-0" />
-                                                    <span className="text-gray-700">{r}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <button
-                                    onClick={resetAssessment}
-                                    className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
-                                >
-                                    <RotateCcw size={20} />
-                                    Start New Assessment
-                                </button>
-                            </div>
-
-                            <div className="text-center mt-12 text-blue-200">
-                                <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
-                                <p className="text-sm">Six-pillar framework for urban retail transformation</p>
-                            </div>
+            {/* Key Drivers */}
+            {drivers.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Key Drivers</h3>
+                <div className="space-y-3">
+                  {drivers.slice(0, 4).map((driver, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className={`w-2 h-2 mt-2 rounded-full ${driver.direction === "Strategic Deviation" ? "bg-purple-500" : "bg-pink-500"}`} />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-900">{driver.factor}</span>
+                          <span className={`text-sm font-medium ${driver.direction === "Strategic Deviation" ? "text-purple-600" : "text-pink-600"}`}>
+                            {driver.direction}
+                          </span>
                         </div>
+                      </div>
                     </div>
-                );
-            }
-
-            const totalQuestions = pillars.reduce((sum, p) => sum + p.questions.length, 0);
-            const answeredQuestions = Object.keys(answers).length;
-            const progress = (answeredQuestions / totalQuestions) * 100;
-
-            const currentPillarData = pillars[currentPillar];
-            const currentQuestionData = currentPillarData.questions[currentQuestion];
-            const Icon = currentPillarData.icon;
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4 md:p-8">
-                    <div className="max-w-3xl mx-auto">
-                        {answeredQuestions === 0 ? (
-                            <div className="text-center">
-                                <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-                                    Urban Retail Transformation Diagnostic
-                                </h1>
-                                <p className="text-xl md:text-2xl text-blue-200 mb-8 max-w-2xl mx-auto">
-                                    Assess whether your retail space functions as urban infrastructure or traditional commerce.
-                                </p>
-                                
-                                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/20">
-                                    <h2 className="text-2xl font-bold text-white mb-6">Six Pillars of Urban Infrastructure</h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                        {pillars.map((pillar, index) => {
-                                            const PillarIcon = pillar.icon;
-                                            return (
-                                                <div key={index} className="text-center">
-                                                    <div className="mb-3 flex justify-center">
-                                                        <PillarIcon size={36} className="text-blue-300" />
-                                                    </div>
-                                                    <h3 className="font-semibold text-blue-200 mb-2 text-sm">{pillar.name}</h3>
-                                                    <p className="text-blue-100 text-xs">{pillar.description}</p>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20 max-w-2xl mx-auto text-left">
-                                    <h3 className="text-xl font-bold text-white mb-4">What You'll Discover</h3>
-                                    <ul className="space-y-3 text-blue-100">
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-2 h-2 mt-2 rounded-full bg-blue-400" />
-                                            <span>Your overall urban infrastructure score (0-100%)</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-2 h-2 mt-2 rounded-full bg-blue-400" />
-                                            <span>Performance across all six pillars</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-2 h-2 mt-2 rounded-full bg-blue-400" />
-                                            <span>Comparison: Infrastructure vs. Traditional Retail</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-2 h-2 mt-2 rounded-full bg-blue-400" />
-                                            <span>Prioritized recommendations for transformation</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <button
-                                    onClick={() => setAnswers({ started: true })}
-                                    className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold text-lg hover:from-blue-600 hover:to-cyan-600 transition-all shadow-2xl hover:scale-105"
-                                >
-                                    Begin Assessment
-                                    <ArrowRight size={24} />
-                                </button>
-                                <p className="text-blue-300 mt-6 text-sm">Takes 7-10 minutes · 24 questions across 6 pillars</p>
-                                
-                                <div className="mt-16 text-blue-200 text-sm">
-                                    <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
-                                    <p>Six-pillar framework for urban retail transformation</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <div className="mb-8">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-blue-200 text-sm font-semibold">
-                                            Pillar {currentPillar + 1} of {pillars.length}: {currentPillarData.name}
-                                        </span>
-                                        <span className="text-blue-200 text-sm font-semibold">
-                                            {Math.round(progress)}% Complete
-                                        </span>
-                                    </div>
-                                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-500"
-                                            style={{ width: `${progress}%` }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6 animate-fadeIn">
-                                    <div className="mb-6">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                                                <Icon size={24} className="text-blue-600" />
-                                            </div>
-                                            <div>
-                                                <span className="block text-sm font-semibold text-blue-600">
-                                                    {currentPillarData.name}
-                                                </span>
-                                                <span className="block text-xs text-gray-500">
-                                                    Question {currentQuestion + 1} of {currentPillarData.questions.length}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                                            {currentQuestionData.question}
-                                        </h2>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        {currentQuestionData.options.map((option, index) => (
-                                            <button
-                                                key={index}
-                                                onClick={() => handleAnswer(option.value)}
-                                                className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-gray-900 font-medium group-hover:text-blue-700">
-                                                        {option.label}
-                                                    </span>
-                                                    <ArrowRight size={20} className="text-gray-400 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all" />
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {currentQuestion > 0 && (
-                                    <button
-                                        onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                                        className="text-blue-200 hover:text-white transition-colors"
-                                    >
-                                        ← Back
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                  ))}
                 </div>
-            );
-        };
+              </div>
+            )}
+          </div>
 
-        ReactDOM.render(<UrbanRetailDiagnostic />, document.getElementById('root'));
-    </script>
-</body>
-</html>
+          {/* Recommendations */}
+          <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Strategic Recommendations</h3>
+            <div className="space-y-6">
+              {recommendations.map((rec, index) => (
+                <div key={index} className="border-l-4 border-purple-500 pl-4">
+                  <h4 className="font-bold text-gray-900 mb-2">{rec.title}</h4>
+                  <p className="text-gray-600">{rec.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={resetAssessment}
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg"
+            >
+              <RotateCcw size={20} />
+              Start New Assessment
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center mt-12 text-purple-200">
+            <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
+            <p className="text-sm">Based on frameworks designed for D&AD's Shift program</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const progress = ((currentStep + 1) / questions.length) * 100;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+      <div className="max-w-3xl mx-auto">
+        {currentStep === 0 ? (
+          // Landing Page
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Strategic Spectrum Assessment
+            </h1>
+            <p className="text-xl md:text-2xl text-purple-200 mb-8 max-w-2xl mx-auto">
+              Navigate uncertainty with clarity. Discover whether your context calls for bold innovation or strategic refinement.
+            </p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/20">
+              <h2 className="text-2xl font-bold text-white mb-4">What You'll Discover</h2>
+              <div className="grid md:grid-cols-2 gap-6 text-left">
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Your Strategic Position</h3>
+                  <p className="text-purple-100 text-sm">Where you fall on the deviation ↔ deepening spectrum</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Key Drivers</h3>
+                  <p className="text-purple-100 text-sm">Which factors are pushing you in each direction</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Tailored Recommendations</h3>
+                  <p className="text-purple-100 text-sm">4 strategic actions aligned with your context</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-purple-200 mb-2">Decision Framework</h3>
+                  <p className="text-purple-100 text-sm">A clear lens for navigating in-between periods</p>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setCurrentStep(1)}
+              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-2xl hover:scale-105"
+            >
+              Begin Assessment
+              <ArrowRight size={24} />
+            </button>
+            <p className="text-purple-300 mt-6 text-sm">Takes 3-5 minutes · 8 questions</p>
+            
+            <div className="mt-16 text-purple-200 text-sm">
+              <p className="mb-2">Developed by <span className="font-semibold">Aídah R. Gil</span> | Ingenio CIX</p>
+              <p>Based on frameworks designed for D&AD's Shift program</p>
+            </div>
+          </div>
+        ) : (
+          // Question Flow
+          <div>
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-purple-200 text-sm font-semibold">
+                  Question {currentStep} of {questions.length}
+                </span>
+                <span className="text-purple-200 text-sm font-semibold">
+                  {Math.round(progress)}% Complete
+                </span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Question Card */}
+            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6 animate-fadeIn">
+              <div className="mb-6">
+                <span className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-4">
+                  {questions[currentStep - 1].title}
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {questions[currentStep - 1].question}
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                {questions[currentStep - 1].options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswer(option.value)}
+                    className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-900 font-medium group-hover:text-purple-700">
+                        {option.label}
+                      </span>
+                      <ArrowRight size={20} className="text-gray-400 group-hover:text-purple-500 opacity-0 group-hover:opacity-100 transition-all" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Back Button */}
+            {currentStep > 1 && (
+              <button
+                onClick={() => setCurrentStep(currentStep - 1)}
+                className="text-purple-200 hover:text-white transition-colors"
+              >
+                ← Back
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default StrategicSpectrumTool;
